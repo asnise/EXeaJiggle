@@ -5,7 +5,7 @@ Effortless real-time secondary motion and jiggle physics for bones in Blender. B
 Developed by **Axnise**
 
 <p align="center">
-  <img src="docs/media/front_preview.gif" alt="EXea Jiggle Real-Time Preview" width="100%" />
+  <img src="docs/media/front_preview.webp" alt="EXea Jiggle Real-Time Preview" width="100%" />
 </p>
 
 ---
@@ -14,9 +14,9 @@ Developed by **Axnise**
 
 | Front View | Wireframe & Bone Chains |
 | :---: | :---: |
-| ![Front View](docs/media/front_preview.gif) | ![Wireframe Preview](docs/media/wireframe_preview.gif) |
+| ![Front View](docs/media/front_preview.webp) | ![Wireframe Preview](docs/media/wireframe_preview.webp) |
 | **Side Angle** | **Back View** |
-| ![Side Angle](docs/media/side_preview.gif) | ![Back View](docs/media/back_preview.gif) |
+| ![Side Angle](docs/media/side_preview.webp) | ![Back View](docs/media/back_preview.webp) |
 
 ---
 
