@@ -1,6 +1,6 @@
 schema_version = "1.0.0"
 id = "exea_jiggle"
-version = "2.0.0"
+version = "1.0.0"
 name = "EXea Jiggle"
 tagline = "Effortless real-time jiggle bone physics and secondary motion"
 maintainer = "Axnise"
