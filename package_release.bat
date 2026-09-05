@@ -17,6 +17,8 @@ del /s /q "%TARGET_DIR%\*.bat"
 del /s /q "%TARGET_DIR%\*.zip"
 del /s /q "%TARGET_DIR%\.gitignore" 2>nul
 del /s /q "%TARGET_DIR%\user_presets.json" 2>nul
+if exist "%TARGET_DIR%\ImageSample" rd /s /q "%TARGET_DIR%\ImageSample"
+if exist "%TARGET_DIR%\docs" rd /s /q "%TARGET_DIR%\docs"
 
 echo Compressing Addon...
 powershell -Command "Compress-Archive -Path '%TARGET_DIR%\*' -DestinationPath '%OUT_ZIP%' -Force"
