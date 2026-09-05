@@ -1,0 +1,17 @@
+schema_version = "1.0.0"
+id = "exea_jiggle"
+version = "2.0.0"
+name = "EXea Jiggle"
+tagline = "Effortless real-time jiggle bone physics and secondary motion"
+maintainer = "Axnise"
+type = "add-on"
+website = "https://github.com/asnise/EXeaJiggle"
+license = [
+    "SPDX:GPL-3.0-or-later",
+]
+copyright = [
+    "2026 Axnise",
+]
+blender_version_min = "4.2.0"
+tags = ["Animation", "Rigging"]
+support = "https://github.com/asnise/EXeaJiggle/issues"

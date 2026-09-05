@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+*.zip
+*.blend1
+user_presets.json
