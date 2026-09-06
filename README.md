@@ -12,6 +12,10 @@ Developed by **Axnise**
 
 ## Showcase
 
+<p align="center">
+  <img src="docs/media/layers_showcase.webp" alt="EXea Jiggle Layers Workflow" width="100%" />
+</p>
+
 | Front View | Wireframe & Bone Chains |
 | :---: | :---: |
 | ![Front View](docs/media/front_preview.webp) | ![Wireframe Preview](docs/media/wireframe_preview.webp) |
@@ -22,13 +26,14 @@ Developed by **Axnise**
 
 ## Features
 
+- **Jiggle Layers System** — Organize bones into clean, scrollable UIList layers (Hair, Chest, Clothes, Tail) with bone counts and category icons.
+- **Unified Grouping & Smart Naming** — Apply physics with an interactive naming dialog; all selected bones are assigned together into a single group with search/dropdown support.
+- **Independent Layer Mute & Tuning** — Mute/solo physics per layer with checkboxes directly in the list, or adjust Stiffness, Damping, and Gravity per group.
 - **Real-time Viewport Simulation** — Preview physics live directly in the 3D Viewport with interactive playback.
 - **Chain Dynamics** — Setup entire bone chains (hair strands, tails, ropes) in a single click with configurable tip falloff.
-- **Physics Parameters** — Precise control over **Stiffness**, **Damping**, and **Gravity** per bone.
-- **Preset System** — Switch between presets (`Soft`, `Medium`, `Firm`) or save custom setups with one click.
-- **Clean Keyframe Baking** — Bake simulated motion directly to standard keyframes into your Action, automatically cleaning up temporary helpers and constraints.
-- **Batch Utility Controls** — Quickly select all jiggle-enabled bones or remove jiggle across the entire armature.
-- **Modern Blender Support** — Full compatibility with Blender 4.2+ Extensions system as well as Blender 3.0–4.1 classic add-on workflows.
+- **Physics Parameters & Presets** — Switch between presets (`Soft`, `Medium`, `Firm`) or save custom setups with one click.
+- **Batch Utility & Copy Tools** — Copy settings across selected bones, select all bones in a layer, or bake motion to clean keyframes.
+- **Modern Blender Compatibility** — Full support for Blender 4.2+ Extensions system and classic Blender 3.0–4.1 add-on workflows.
 
 ---
 

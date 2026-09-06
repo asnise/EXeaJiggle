@@ -117,7 +117,126 @@ def get_target_tail(pb, depsgraph):
     return head, tail
 
 
-def setup_bone(pb):
+DEFAULT_LAYER = "Main"
+
+
+def guess_layer_from_name(bone_name):
+    name_lower = bone_name.lower()
+    if any(k in name_lower for k in ("hair", "bang", "fringe", "ponytail", "braid", "ahoge")):
+        return "Hair"
+    if any(k in name_lower for k in ("tail", "shippo")):
+        return "Tail"
+    if any(k in name_lower for k in ("cloth", "skirt", "dress", "sleeve", "cape", "ribbon", "belt", "coat")):
+        return "Clothes"
+    if any(k in name_lower for k in ("ear", "mimi")):
+        return "Ears"
+    if any(k in name_lower for k in ("breast", "boob", "chest", "bust")):
+        return "Chest"
+    return DEFAULT_LAYER
+
+
+def get_bone_layer(pb):
+    return pb.get("jiggle_layer", DEFAULT_LAYER)
+
+
+def set_bone_layer(pb, layer_name):
+    lname = layer_name.strip() if (layer_name and layer_name.strip()) else DEFAULT_LAYER
+    pb["jiggle_layer"] = lname
+
+
+def get_armature_layers(armature):
+    layers = {}
+    for pb in armature.pose.bones:
+        if has_jiggle(pb):
+            lname = get_bone_layer(pb)
+            if lname not in layers:
+                layers[lname] = {"bones": [], "muted": True}
+            layers[lname]["bones"].append(pb)
+            con = pb.constraints.get(CONSTRAINT_NAME)
+            if con and not con.mute:
+                layers[lname]["muted"] = False
+    return layers
+
+
+def set_layer_mute(armature, layer_name, mute_state):
+    for pb in armature.pose.bones:
+        if has_jiggle(pb) and get_bone_layer(pb) == layer_name:
+            con = pb.constraints.get(CONSTRAINT_NAME)
+            if con:
+                con.mute = mute_state
+
+
+def toggle_layer_mute(armature, layer_name):
+    layers = get_armature_layers(armature)
+    curr_muted = layers.get(layer_name, {}).get("muted", False)
+    set_layer_mute(armature, layer_name, not curr_muted)
+    return not curr_muted
+
+
+def remove_layer_bones(armature, layer_name):
+    count = 0
+    for pb in list(armature.pose.bones):
+        if has_jiggle(pb) and get_bone_layer(pb) == layer_name:
+            cleanup_bone(pb)
+            count += 1
+    return count
+
+
+def rename_layer(armature, old_name, new_name):
+    new_name = new_name.strip() if (new_name and new_name.strip()) else DEFAULT_LAYER
+    if old_name == new_name:
+        return 0
+    count = 0
+    for pb in armature.pose.bones:
+        if has_jiggle(pb) and get_bone_layer(pb) == old_name:
+            set_bone_layer(pb, new_name)
+            count += 1
+    return count
+
+
+def sync_armature_layers(armature):
+    if not armature or armature.type != 'ARMATURE':
+        return
+    arm = armature.data
+    if not hasattr(arm, "jiggle_layers"):
+        return
+    existing_items = {item.name: item for item in arm.jiggle_layers}
+    bone_layers = get_armature_layers(armature)
+
+    for lname, ldata in bone_layers.items():
+        if lname not in existing_items:
+            item = arm.jiggle_layers.add()
+            item["prev_name"] = lname
+            item.name = lname
+            if ldata["bones"]:
+                first_b = ldata["bones"][0]
+                item.stiffness = first_b.get("jiggle_stiffness", 0.35)
+                item.damping = first_b.get("jiggle_damping", 0.35)
+                item.gravity = first_b.get("jiggle_gravity", 0.30)
+    if len(arm.jiggle_layers) > 0 and arm.jiggle_layer_index >= len(arm.jiggle_layers):
+        arm.jiggle_layer_index = max(0, len(arm.jiggle_layers) - 1)
+
+
+def find_chain_root(selected_bones, active_pb=None):
+    if not selected_bones:
+        return active_pb
+    sel_set = set(selected_bones)
+    if len(sel_set) == 1:
+        return list(sel_set)[0]
+    roots = [b for b in selected_bones if (not b.parent) or (b.parent not in sel_set)]
+    if roots:
+        if active_pb and active_pb in sel_set:
+            for r in roots:
+                curr = active_pb
+                while curr:
+                    if curr == r:
+                        return r
+                    curr = curr.parent
+        return roots[0]
+    return active_pb or selected_bones[0]
+
+
+def setup_bone(pb, layer_name=None):
     arm = pb.id_data
     col = _collection()
     name = f"_jig_{arm.name}_{pb.name}"
@@ -139,6 +258,12 @@ def setup_bone(pb):
         con.name = CONSTRAINT_NAME
     con.target = empty
     con.track_axis = 'TRACK_Y'
+
+    if layer_name:
+        set_bone_layer(pb, layer_name)
+    elif "jiggle_layer" not in pb:
+        set_bone_layer(pb, guess_layer_from_name(pb.name))
+
     defaults = {"jiggle_stiffness": 0.35, "jiggle_damping": 0.35, "jiggle_gravity": 0.30}
     for prop, val in defaults.items():
         if prop not in pb:
@@ -162,7 +287,7 @@ def cleanup_bone(pb):
         pb.constraints.remove(con)
         if target and target.name in bpy.data.objects:
             bpy.data.objects.remove(target, do_unlink=True)
-    for prop in ("jiggle_stiffness", "jiggle_damping", "jiggle_gravity"):
+    for prop in ("jiggle_stiffness", "jiggle_damping", "jiggle_gravity", "jiggle_layer"):
         if prop in pb:
             del pb[prop]
 
@@ -194,11 +319,13 @@ def get_chain_bones(root_pb):
     return chain
 
 
-def setup_chain(root_pb, falloff=0.85, base_preset='Medium'):
+def setup_chain(root_pb, falloff=0.85, base_preset='Medium', layer_name=None):
     chain = get_chain_bones(root_pb)
+    if not layer_name:
+        layer_name = guess_layer_from_name(root_pb.name)
     base = DEFAULT_PRESETS.get(base_preset, DEFAULT_PRESETS['Medium'])
     for i, pb in enumerate(chain):
-        setup_bone(pb)
+        setup_bone(pb, layer_name=layer_name)
         factor = falloff ** i
         pb["jiggle_stiffness"] = round(base["jiggle_stiffness"] * factor, 4)
         pb["jiggle_damping"] = round(max(0.05, base["jiggle_damping"] * factor), 4)
@@ -293,7 +420,7 @@ def _get_chain_goals(chain, depsgraph):
 
 def simulate_bone(pb, depsgraph, dt):
     con = pb.constraints.get(CONSTRAINT_NAME)
-    if not con or not con.target:
+    if not con or not con.target or con.mute:
         return
     empty = con.target
     head, target = get_target_tail(pb, depsgraph)
@@ -331,6 +458,9 @@ def simulate_bone(pb, depsgraph, dt):
 
 
 def simulate_chain(chain, depsgraph, dt):
+    if all(pb.constraints.get(CONSTRAINT_NAME) and pb.constraints[CONSTRAINT_NAME].mute for pb in chain):
+        return
+
     goals = _get_chain_goals(chain, depsgraph)
     if not goals:
         return

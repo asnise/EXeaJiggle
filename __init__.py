@@ -1,7 +1,7 @@
 bl_info = {
     "name": "EXea Jiggle",
     "author": "Axnise",
-    "version": (1, 0, 0),
+    "version": (1, 1, 0),
     "blender": (3, 0, 0),
     "location": "View3D > Sidebar > EXea Jiggle",
     "description": "Effortless real-time jiggle bone physics and secondary motion",

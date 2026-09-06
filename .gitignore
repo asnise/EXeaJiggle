@@ -1,6 +1,38 @@
+# Bytecode & Python cache
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+
+# Release & Build outputs
+EXeaJiggle_Release/
 *.zip
+dist/
+build/
+
+# Blender backup & temporary files
 *.blend1
+*.blend2
+*.blend@
+*.crash.txt
+
+# Local user runtime data
 user_presets.json
+
+# Raw large media & source assets
 ImageSample/
+
+# OS metadata
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# IDE & Editor configurations
+.vscode/
+.idea/
+*.code-workspace
+
+# Dev feedback demo & scratch analysis
+docs/feedback_*
+UPDATENOTE.md
+*updatenote*.md
+
